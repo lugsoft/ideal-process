@@ -1,0 +1,31 @@
+{
+    "name": "react/react",
+    "description": "Nuclear Reactor written in PHP.",
+    "keywords": ["event-loop", "reactor", "asynchronous"],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/reactphp/react/issues",
+        "irc": "irc://irc.freenode.org/reactphp"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "react/event-loop": "0.4.*",
+        "react/child-process": "0.4.*",
+        "react/stream": "0.4.*"
+    },
+    "suggest": {
+        "ext-libevent": "Allows for use of a more performant event-loop implementation.",
+        "ext-libev": "Allows for use of a more performant event-loop implementation.",
+        "ext-event": "Allows for use of a more performant event-loop implementation."
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.5-dev"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "5.4"
+        }
+    }
+}
