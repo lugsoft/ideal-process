@@ -10,7 +10,7 @@ require __DIR__ . '/vendor/autoload.php';
  * Time: 16:45
  */
 
-class IdealProcces{
+class IdealProcess{
 
     /**
      * Contrastes da classe
