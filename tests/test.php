@@ -9,5 +9,5 @@
 
 include_once __DIR__.'/../IdealProcess/IdealProcess.php';
 
-$test = new IdealProcces();
-$test->run('test',__DIR__.'/test_run.php');
+$test = new IdealProcess();
+$test->run('test2',__DIR__.'/test_run.php');
