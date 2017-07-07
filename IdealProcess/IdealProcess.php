@@ -234,7 +234,11 @@ class IdealProcess{
                         'kill'=>1
                     ]));
                 }else{
+                    $locked = 1;
 
+                    break;
+
+                    /**
                     if($data->process_name != $file){
 
                         file_put_contents($file_process,json_encode([
@@ -257,6 +261,8 @@ class IdealProcess{
 
                     break;
                     }
+                     *
+                     */
 
 
                 }
@@ -299,7 +305,6 @@ class IdealProcess{
 
 
 
-            print_r($pids);
 
             $grep = false;
             $i= 0;
