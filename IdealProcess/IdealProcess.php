@@ -43,7 +43,7 @@ class IdealProcces{
     {
 
 
-        $this->dir_process_lock = __DIR__ . '/proccess_lock/';
+        $this->dir_process_lock = __DIR__ . '/process_lock/';
         $this->dir_kill = __DIR__ . '/kill/';
 
         if($process_name!=null){
@@ -93,7 +93,7 @@ class IdealProcces{
         $args = $_SERVER['argv'];
 
         foreach ($args as $arg) {
-            $arg = str_replace('proccess=','',$arg);
+            $arg = str_replace('process=','',$arg);
 
             if(strpos($arg,':')){
                 $arg = explode(':',$arg);
@@ -109,9 +109,9 @@ class IdealProcces{
 
 
 
-        if(!isset($_arg->proccess_name)) return;
-        if(file_exists($this->dir_kill.$_arg->proccess_name)){
-            unlink($this->dir_kill.$_arg->proccess_name);
+        if(!isset($_arg->process_name)) return;
+        if(file_exists($this->dir_kill.$_arg->process_name)){
+            unlink($this->dir_kill.$_arg->process_name);
             exit;
         }
 
@@ -129,7 +129,7 @@ class IdealProcces{
         if(!isset($args) or count($args) <= 0) return;
 
         foreach ($args as $arg){
-            $_arg = explode('proccess=',$arg);
+            $_arg = explode('process=',$arg);
             if(count($_arg) > 1){
                 $_arg = json_decode($_arg[1]);
 
@@ -152,17 +152,17 @@ class IdealProcces{
         switch ($data->action){
             case 'kill':
 
-                if(isset($data->proccess)){
-                    $this->kill($data->proccess);
+                if(isset($data->process)){
+                    $this->kill($data->process);
                 }
 
                 break;
         }
     }
 
-    function kill($proccess){
+    function kill($process){
 
-        $file = $this->dir_process_lock.$proccess.'.json';
+        $file = $this->dir_process_lock.$process.'.json';
         if(!file_exists($file)){
          file_put_contents($file,json_encode(["kill"=>true]));
         }
@@ -192,30 +192,30 @@ class IdealProcces{
      */
 
     function getParans($data){
-        return "proccess='{proccess_name:$data->proccess_name}'";
+        return "process='{process_name:$data->process_name}'";
 
     }
 
 
-    function run($process_name="proccess",$file= "proccess.php"){
+    function run($process_name="process",$file= "process.php"){
 
         $_process_name = $process_name;
 
         $this->process_name = $_process_name;
-        $this->proccess_name = $_process_name;
+        $this->process_name = $_process_name;
 
         $process_name = $process_name;
         $locked = 1;
-        $file_proccess = $this->dir_process_lock . $process_name . '.json';
+        $file_process = $this->dir_process_lock . $process_name . '.json';
         while ($locked) {
 
-            if (! file_exists($file_proccess)) {
+            if (! file_exists($file_process)) {
 
 
-                file_put_contents($file_proccess,json_encode([
+                file_put_contents($file_process,json_encode([
                     'time'=>time(),
-                    'file_proccess'=>$file,
-                    'proccess_name'=>$_process_name
+                    'file_process'=>$file,
+                    'process_name'=>$_process_name
                 ]));
 
                 $locked = 0;
@@ -224,30 +224,30 @@ class IdealProcces{
 
             } else {
 
-                $data = json_decode(file_get_contents($file_proccess));
+                $data = json_decode(file_get_contents($file_process));
 
-                if(isset($data) and !isset($data->proccess_name) or $data == null){
-                    file_put_contents($file_proccess,json_encode([
+                if(isset($data) and !isset($data->process_name) or $data == null){
+                    file_put_contents($file_process,json_encode([
                         'time'=>time(),
-                        'file_proccess'=>$file,
-                        'proccess_name'=>$_process_name,
+                        'file_process'=>$file,
+                        'process_name'=>$_process_name,
                         'kill'=>1
                     ]));
                 }else{
 
-                    if($data->proccess_name != $file){
+                    if($data->process_name != $file){
 
-                        file_put_contents($file_proccess,json_encode([
+                        file_put_contents($file_process,json_encode([
                             'time'=>time(),
-                            'file_proccess'=>$file,
-                            'proccess_name'=>$_process_name,
+                            'file_process'=>$file,
+                            'process_name'=>$_process_name,
                             'kill'=>1
                         ]));
 
                         sleep(1);
 
-                        if(file_exists($file_proccess)){
-                            unlink($file_proccess);
+                        if(file_exists($file_process)){
+                            unlink($file_process);
                         }
 
 
@@ -266,11 +266,11 @@ class IdealProcces{
 
         if($locked==1){
             $this->is_locked = $locked;
-            $ftime = filemtime($file_proccess);
+            $ftime = filemtime($file_process);
             $this->process_date = date('Y-m-d H:i:s',$ftime);
 
 
-            if($this->check_process($data->proccess_name,$data->file_proccess .' '. $this->getParans($data)) != true){
+            if($this->check_process($data->process_name,$data->file_process .' '. $this->getParans($data)) != true){
                 $this->is_locked = false;
             }
 
@@ -350,7 +350,7 @@ class IdealProcces{
             global $process;
 
 
-            $glob = glob(__DIR__.'/proccess_lock/'.$this->proccess_name.'.json');
+            $glob = glob(__DIR__.'/process_lock/'.$this->process_name.'.json');
             $data = null;
             foreach ($glob as $g){
 
@@ -358,7 +358,7 @@ class IdealProcces{
 
                     $data = json_decode(file_get_contents($g));
 
-                    if($this->check_process($data->file_proccess) != true){
+                    if($this->check_process($data->file_process) != true){
                         print_r($data);
 
                     }$process[$g] = $data;
@@ -370,11 +370,11 @@ class IdealProcces{
 
                 foreach ($process as $data){
 
-                    if($this->check_process($data->file_proccess . ' '.$this->getParans($data)) == false and file_exists($this->dir_process_lock.$data->proccess_name.'.json')){
+                    if($this->check_process($data->file_process . ' '.$this->getParans($data)) == false and file_exists($this->dir_process_lock.$data->process_name.'.json')){
 
-                        $_process[$data->proccess_name] = new React\ChildProcess\Process('php '.$data->file_proccess . ' '.$this->getParans($data));
+                        $_process[$data->process_name] = new React\ChildProcess\Process('php '.$data->file_process . ' '.$this->getParans($data));
 
-                        $_process[$data->proccess_name]->on('exit', function($exitCode, $termSignal) use($data,$loop) {
+                        $_process[$data->process_name]->on('exit', function($exitCode, $termSignal) use($data,$loop) {
 
                             $loop->stop();
 
@@ -382,20 +382,20 @@ class IdealProcces{
 
 
                         $loop->addTimer(0.01, function($timer) use ($_process,$data,$i,$loop) {
-                            $_process[$data->proccess_name]->start($timer->getLoop());
+                            $_process[$data->process_name]->start($timer->getLoop());
 
 
-                            if(file_exists($this->dir_process_lock.$data->proccess_name.'.json')){
+                            if(file_exists($this->dir_process_lock.$data->process_name.'.json')){
 
-                                $get_data = file_get_contents($this->dir_process_lock.$data->proccess_name.'.json');
+                                $get_data = file_get_contents($this->dir_process_lock.$data->process_name.'.json');
                                 $get_data = json_decode($get_data);
-                                $get_data->pid = $_process[$data->proccess_name]->getPid();
+                                $get_data->pid = $_process[$data->process_name]->getPid();
 
-                                file_put_contents($this->dir_process_lock.$data->proccess_name.'.json',json_encode($get_data));
+                                file_put_contents($this->dir_process_lock.$data->process_name.'.json',json_encode($get_data));
 
 
 
-                                $_process[$data->proccess_name]->stdout->on('data', function($output,$loop) {
+                                $_process[$data->process_name]->stdout->on('data', function($output,$loop) {
 
                                     echo "Child script says: {$output}";
 
@@ -411,12 +411,12 @@ class IdealProcces{
                             echo time();
 
 
-                            if(file_exists($this->dir_process_lock.$data->proccess_name.'.json')) {
-                                $get_data = file_get_contents($this->dir_process_lock . $data->proccess_name . '.json');
+                            if(file_exists($this->dir_process_lock.$data->process_name.'.json')) {
+                                $get_data = file_get_contents($this->dir_process_lock . $data->process_name . '.json');
                                 $get_data = json_decode($get_data);
 
                                 if (isset($get_data->kill)) {
-                                    unlink($this->dir_process_lock . $data->proccess_name . '.json');
+                                    unlink($this->dir_process_lock . $data->process_name . '.json');
 
                                     if(isset($get_data->pid)){
                                         exec('kill -9 ' . $get_data->pid);
