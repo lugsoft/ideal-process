@@ -381,7 +381,7 @@ class IdealProcces{
                         });
 
 
-                        $loop->addTimer(0.01, function($timer) use ($_process,$data,$i,$loop) {
+                        $loop->addTimer(0.01, function($timer) use ($_process,$data,$loop) {
                             $_process[$data->process_name]->start($timer->getLoop());
 
 
