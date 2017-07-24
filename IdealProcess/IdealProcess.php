@@ -39,6 +39,11 @@ class IdealProcess{
     ];
 
 
+
+    var $controller_method = '';
+    var $get = '';
+    var $ext = '.php';
+
     function __construct($process_name=null)
     {
 
@@ -60,6 +65,11 @@ class IdealProcess{
 
         $this->parans();
 
+    }
+
+    function setController($contoller,$method='index'){
+
+        $this->controller_method = $contoller.' '.$method;
     }
 
 
@@ -192,12 +202,39 @@ class IdealProcess{
      */
 
     function getParans($data){
-        return "process='{process_name:$data->process_name}'";
+        return $this->controller_method." process='{process_name:$data->process_name}'";
+
+    }
+
+    /**
+     * @param string $process_name
+     * @param string $file
+     */
+
+    function get(){
+        return "data='".json_encode($this->get)."'";
 
     }
 
 
-    function run($process_name="process",$file= "process.php"){
+    function run($process_name="process",$file= "process.php",$data=[]){
+
+
+        $get = explode($this->ext,$file) ;
+        if(count($data) > 1){
+
+        }
+        if(count($get) > 1)
+        {
+            unset($get[0]);
+            $get = explode(' ',$get[1]);
+            if(empty($get[0])){
+                unset($get[0]);
+            }
+            //$this->get =  substr($get,1);
+        }
+        $get = array_merge($get,$data);
+        $this->get = $get;
 
         $_process_name = $process_name;
 
@@ -377,7 +414,7 @@ class IdealProcess{
 
                     if($this->check_process($data->file_process . ' '.$this->getParans($data)) == false and file_exists($this->dir_process_lock.$data->process_name.'.json')){
 
-                        $_process[$data->process_name] = new React\ChildProcess\Process('php '.$data->file_process . ' '.$this->getParans($data));
+                        $_process[$data->process_name] = new React\ChildProcess\Process('php '.$data->file_process . ' '.$this->getParans($data).' '.$this->get($data));
 
                         $_process[$data->process_name]->on('exit', function($exitCode, $termSignal) use($data,$loop) {
 
